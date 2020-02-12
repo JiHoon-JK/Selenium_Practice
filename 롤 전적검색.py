@@ -23,13 +23,13 @@ driver.find_element_by_class_name("summoner-search-form__button").click()
 
 soup = BeautifulSoup(driver.page_source, 'html.parser')
 
-lol_infos = soup.select('body > div.l-wrap.l-wrap--summoner > div.l-container > div > div > div.Header')
+lol_info = soup.select('body > div.l-wrap.l-wrap--summoner > div.l-container > div > div > div.Header')
 
-image = '대표 아이콘: ' + 'http:' + str(lol_infos.select_one('div.Face > img').attrs['src']).replace('//', '')
+image = '대표 아이콘: ' + 'http:' + str(lol_info.select_one('div.Face > img').attrs['src']).replace('//', '')
 print(image)
-ID = '아이디 : ' + lol_infos.select_one('div.Profile > div.Information > span.Name').text
+ID = '아이디 : ' + lol_info.select_one('div.Profile > div.Information > span.Name').text
 print(ID)
-Rank = lol_infos.select_one('div.Profile > div.Information > div > div > a').text
+Rank = lol_info.select_one('div.Profile > div.Information > div > div > a').text
 print(Rank)
 
 lol_info_data = {
@@ -38,4 +38,4 @@ lol_info_data = {
     'Rank' : Rank
 }
 
-#db.lol_rank_info.insert_one(lol_info_data)
+#db.lol_info.insert_one(lol_info_data)
