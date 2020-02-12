@@ -7,7 +7,6 @@ from pymongo import MongoClient  # pymongo를 임포트 하기(패키지 인스�
 client = MongoClient('localhost', 27017)  # mongoDB는 27017 포트로 돌아갑니다.
 db = client.dbsparta  # 'dbsparta'라는 이름의 db를 만듭니다.
 
-
 driver = webdriver.Chrome('./chromedriver')
 
 # 롤 전적 검색 사이트 입력
@@ -18,25 +17,31 @@ driver.get('https://www.op.gg/')
 
 driver.find_element_by_xpath('/html/body/div[2]/div[3]/form/input').send_keys("호두밭의파수쿤")
 
-#전적검색을 위해서 버튼 누르기
+# 전적검색을 위해서 버튼 누르기
 driver.find_element_by_class_name("summoner-search-form__button").click()
 
 soup = BeautifulSoup(driver.page_source, 'html.parser')
 
-lol_info = soup.select('#body > div.l-wrap.l-wrap--summoner > div.l-container > div > div > div.Header')
-
-image = '대표 아이콘: ' + 'http:' + str(lol_info.select_one('div.Face > img').attrs['src']).replace('//', '')
-print(image)
-ID = '아이디 : ' + lol_info.select_one('div.Profile > div.Information > span.Name').text
-print(ID)
-Rank = lol_info.select_one('div.Profile > div.Information > div > div > a').text
-print(Rank)
+lol_infos = soup.select('body > div.l-wrap.l-wrap--summoner > div.l-container > div > div > div.Header')
 
 lol_info_data = {
-    'image' : image,
-    'ID' : ID,
-    'Rank' : Rank
+    'image': '',
+    'ID': '',
+    'Rank': ''
 }
-print(lol_info_data)
 
-#db.lol_info.insert_one(lol_info_data)
+for lol_info in lol_infos:
+    image = '대표 프로필: ' + 'http:' + str(lol_info.select_one('img.ProfileImage').attrs['src']).replace('//', '')
+    print(image)
+    ID = '아이디 : ' + str(lol_info.select_one('div.Profile > div.Information > span.Name').text)
+    print(ID)
+    Rank = str(lol_info.select_one('div.Profile > div.Information > div > div > a').text)
+    print(Rank)
+
+    lol_info_data = {
+        'image': image,
+        'ID': ID,
+        'Rank': Rank
+    }
+
+    db.lol_info.insert_one(lol_info_data)
